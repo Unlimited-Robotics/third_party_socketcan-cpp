@@ -6,6 +6,7 @@ pkg_check_modules(SOCKETCAN_CPP REQUIRED socketcan_cpp)
 
 set(EXECUTABLES 
 	read_write
+  canrecovery
 )
 
 set(CMAKE_CXX_STANDARD 20)
