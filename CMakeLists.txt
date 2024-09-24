@@ -85,7 +85,12 @@ install(FILES
     ${CMAKE_BINARY_DIR}/gen/${PROJECT_NAME}/${PROJECT_NAME}_export.h
 	${PUBLIC_HDRS}
     DESTINATION include/${PROJECT_NAME}/${PROJECT_NAME})
-    
+
+configure_file(${CMAKE_SOURCE_DIR}/${PROJECT_NAME}.pc.in ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc @ONLY)
+
+# Install .pc file
+install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc DESTINATION lib/pkgconfig)
+
 ########### Add uninstall target ###############
 CONFIGURE_FILE(
   "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"

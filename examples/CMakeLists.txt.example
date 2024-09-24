@@ -1,0 +1,37 @@
+cmake_minimum_required(VERSION 3.8)
+project(socketcan_cpp_example)
+
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(SOCKETCAN_CPP REQUIRED socketcan_cpp)
+
+set(EXECUTABLES 
+	read_write
+)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+foreach(EXECUTABLE ${EXECUTABLES})
+	add_executable(${EXECUTABLE} src/${EXECUTABLE}.cpp)
+	
+	target_include_directories(${EXECUTABLE}
+		PRIVATE
+    ${SOCKETCAN_CPP_INCLUDE_DIRS}
+    include
+	)
+
+  set_target_properties(${EXECUTABLE} PROPERTIES
+    CXX_EXTENSIONS OFF
+  )
+
+  target_link_libraries(${EXECUTABLE} PRIVATE
+    ${SOCKETCAN_CPP_LIBRARIES}
+  )
+
+  target_compile_options(${EXECUTABLE} PUBLIC
+    ${SOCKETCAN_CPP_CFLAGS_OTHER}
+  )
+
+  target_compile_definitions(${EXECUTABLE} PUBLIC -DHAVE_SOCKETCAN_HEADERS=1)
+
+endforeach()

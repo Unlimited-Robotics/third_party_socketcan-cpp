@@ -131,8 +131,11 @@ namespace scpp
 #else
         printf("Your operating system does not support socket can! \n");
 #endif
+        m_poll_desc[0].fd = m_socket;
+        m_poll_desc[0].events = POLLIN;
         return STATUS_OK;
     }
+
     SocketCanStatus SocketCan::write(const CanFrame & msg)
     {
 #ifdef HAVE_SOCKETCAN_HEADERS
@@ -159,9 +162,14 @@ namespace scpp
 #endif
         return STATUS_OK;
     }
-    SocketCanStatus SocketCan::read(CanFrame & msg)
+    SocketCanStatus SocketCan::read(CanFrame & msg, int32_t timeout)
     {
 #ifdef HAVE_SOCKETCAN_HEADERS
+        if(!poll(m_poll_desc, 1, timeout))
+            return STATUS_NOTHING_TO_READ;
+        if(m_poll_desc[0].revents!=POLLIN)
+            return STATUS_NOTHING_TO_READ;
+
         struct canfd_frame frame;
 
         // Read in a CAN frame
@@ -181,6 +189,16 @@ namespace scpp
 #endif
         return STATUS_OK;
     }
+
+    SocketCanStatus SocketCan::is_data_available(int32_t timeout)
+    {
+      if(!poll(m_poll_desc, 1, timeout))
+        return STATUS_NOTHING_TO_READ;
+      if(m_poll_desc[0].revents!=POLLIN  )
+        return STATUS_NOTHING_TO_READ;
+      return STATUS_OK;
+    }
+
     SocketCanStatus SocketCan::close()
     {
 #ifdef HAVE_SOCKETCAN_HEADERS
@@ -188,6 +206,21 @@ namespace scpp
 #endif
         return STATUS_OK;
     }
+
+    SocketCanStatus SocketCan::set_can_filter(can_filter *filter_buffer, ssize_t size) const
+    {
+        // CAN_MASK
+        // CAN_SFF_MASK 0x000007FFU /* standard frame format (SFF) */
+        // CAN_EFF_MASK 0x1FFFFFFFU /* extended frame format (EFF) */
+        // CAN_ERR_MASK 0x1FFFFFFFU /* omit EFF, RTR, ERR flags */
+
+        if (setsockopt(m_socket, SOL_CAN_RAW, CAN_RAW_FILTER, filter_buffer, size) == -1) 
+        {
+            return STATUS_CAN_FILTER_ERROR;
+        }
+        return STATUS_OK;
+    }
+
     const std::string & SocketCan::interfaceName() const
     {
         return m_interface;

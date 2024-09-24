@@ -5,13 +5,12 @@
 int main()
 {   
     scpp::SocketCan sockat_can;
-    if (sockat_can.open("can0") == scpp::STATUS_OK)
+    if (sockat_can.open("can2") == scpp::STATUS_OK)
     {
     for (int j = 0; j < 20000; ++j)
     {
         scpp::CanFrame fr;
-        
-        while(sockat_can.read(fr) == scpp::STATUS_OK)
+        while(sockat_can.read(fr,1) == scpp::STATUS_OK)
         {
             printf("len %d byte, id: %d, data: %02x %02x %02x %02x %02x %02x %02x %02x  \n", fr.len, fr.id, 
                 fr.data[0], fr.data[1], fr.data[2], fr.data[3],
@@ -29,10 +28,11 @@ int main()
         else
             printf("Message was written to the socket \n");
     }
+    printf("Finished! \n");
     }
     else
     {
         printf("Cannot open can socket!");
     }
     return 0;
-}   
+}

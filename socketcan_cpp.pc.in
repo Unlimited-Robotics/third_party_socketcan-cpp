@@ -1,0 +1,10 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include/socketcan_cpp
+
+Name: socketcan_cpp
+Description: Simple c++ interface to read/write can sockets
+Version: @PROJECT_VERSION@
+Libs: -L${libdir} -lsocketcan_cpp
+Cflags: -I${includedir}

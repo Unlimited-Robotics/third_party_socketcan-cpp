@@ -2,6 +2,7 @@
 
 #include <string>
 #include <socketcan_cpp/socketcan_cpp_export.h>
+#include <poll.h>
 
 #ifndef HAVE_SOCKETCAN_HEADERS
 #define CAN_MTU 0
@@ -39,6 +40,8 @@ namespace scpp
         STATUS_WRITE_ERROR = 1 << 7,
         STATUS_READ_ERROR = 1 << 8,
         STATUS_BIND_ERROR = 1 << 9,
+        STATUS_NOTHING_TO_READ=1<<10,
+        STATUS_CAN_FILTER_ERROR=1<<11,
     };
 
     class SocketCan
@@ -49,7 +52,9 @@ namespace scpp
         SOCKETCAN_CPP_EXPORT SocketCan & operator=(const SocketCan &) = delete;
         SOCKETCAN_CPP_EXPORT SocketCanStatus open(const std::string & can_interface, int32_t read_timeout_ms = 3, SocketMode mode = MODE_CAN_MTU);
         SOCKETCAN_CPP_EXPORT SocketCanStatus write(const CanFrame & msg);
-        SOCKETCAN_CPP_EXPORT SocketCanStatus read(CanFrame & msg);
+        SOCKETCAN_CPP_EXPORT SocketCanStatus read(CanFrame & msg, int32_t timeout=0);
+        SOCKETCAN_CPP_EXPORT SocketCanStatus is_data_available(int32_t timeout=0);
+        SOCKETCAN_CPP_EXPORT SocketCanStatus set_can_filter(can_filter *filter_buffer, ssize_t size) const;
         SOCKETCAN_CPP_EXPORT SocketCanStatus close();
         SOCKETCAN_CPP_EXPORT const std::string & interfaceName() const;
         SOCKETCAN_CPP_EXPORT ~SocketCan();
@@ -58,5 +63,6 @@ namespace scpp
         int32_t m_read_timeout_ms = 3;
         std::string m_interface;
         SocketMode m_socket_mode;
+        pollfd m_poll_desc[1];
     };
 }
