@@ -62,7 +62,7 @@ namespace scpp
         /* open socket */
         if ((m_socket = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) 
         {
-            perror("socket");
+            // perror("socket");
             return STATUS_SOCKET_CREATE_ERROR;
         }
         int mtu, enable_canfd = 1;
@@ -73,7 +73,7 @@ namespace scpp
         ifr.ifr_name[IFNAMSIZ - 1] = '\0';
         ifr.ifr_ifindex = if_nametoindex(ifr.ifr_name);
         if (!ifr.ifr_ifindex) {
-            perror("if_nametoindex");
+            // perror("if_nametoindex");
             return STATUS_INTERFACE_NAME_TO_IDX_ERROR;
         }
 
@@ -84,7 +84,7 @@ namespace scpp
         {
             /* check if the frame fits into the CAN netdevice */
             if (ioctl(m_socket, SIOCGIFMTU, &ifr) < 0) {
-                perror("SIOCGIFMTU");
+                // perror("SIOCGIFMTU");
                 return STATUS_MTU_ERROR;
             }
             mtu = ifr.ifr_mtu;
@@ -125,7 +125,7 @@ namespace scpp
         setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv,sizeof(struct timeval));
 
         if (bind(m_socket, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
-            perror("bind");
+            // perror("bind");
             return STATUS_BIND_ERROR;
         }
 #else
@@ -154,7 +154,7 @@ namespace scpp
         }
         /* send frame */
         if (::write(m_socket, &frame, int(m_socket_mode)) != int(m_socket_mode)) {
-            perror("write");
+            // perror("write");
             return STATUS_WRITE_ERROR;
         }
 #else
@@ -176,7 +176,7 @@ namespace scpp
         auto num_bytes = ::read(m_socket, &frame, CANFD_MTU);
         if (num_bytes != CAN_MTU && num_bytes != CANFD_MTU)
         {
-            //perror("Can read error");
+            // perror("Can read error");
             return STATUS_READ_ERROR;
         }
 
