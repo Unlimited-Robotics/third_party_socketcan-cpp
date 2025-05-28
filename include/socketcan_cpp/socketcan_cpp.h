@@ -3,6 +3,7 @@
 #include <string>
 #include <socketcan_cpp/socketcan_cpp_export.h>
 #include <poll.h>
+#include <cstdint>
 
 #ifndef HAVE_SOCKETCAN_HEADERS
 #define CAN_MTU 0
